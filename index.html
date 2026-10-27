@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HistoGame - Iniciar Sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #7a4b2a;
+      --primary-light: #a56a43;
+      --primary-dark: #4e2f1d;
+      --accent: #c9a25d;
+      --accent2: #8b3f2f;
+      --bg: #f5efe3;
+      --card: #fffaf2;
+      --text: #2f241c;
+      --text-soft: #6a5647;
+      --border: #dcc9b2;
+      --shadow: 0 4px 20px rgba(78, 47, 29, 0.14);
+      --radius: 16px;
+      --danger: #c0392b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      background: rgba(78, 47, 29, 0.96);
+      backdrop-filter: blur(10px);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 82px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 50px;
+      height: 50px;
+      background: rgba(255,255,255,.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .nav-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .nav-subtitle {
+      font-size: .75rem;
+      color: rgba(255,255,255,.72);
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.8rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+
+    .role-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: var(--bg);
+      padding: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .role-tab {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      background: transparent;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .role-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: var(--primary-dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .error-alert {
+      background: #fdeaea;
+      color: var(--danger);
+      border: 1px solid #f5b7b1;
+      padding: 0.7rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 1.2rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">📜</div>
+      <div class="nav-text">
+        <span class="nav-title">HistoGame</span>
+        <span class="nav-subtitle">Plataforma Educativa de Historia</span>
+      </div>
+    </a>
+  </nav>
+
+  <main class="main-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Iniciar Sesión</h1>
+        <p>Selecciona tu perfil e ingresa a la plataforma</p>
+      </div>
+
+      <div class="role-tabs">
+        <button type="button" class="role-tab active" id="tabEstudiante" onclick="selectRole('Estudiante')">🎓 Estudiante</button>
+        <button type="button" class="role-tab" id="tabDocente" onclick="selectRole('Docente')">👨‍🏫 Docente</button>
+      </div>
+
+      <!-- Alerta de error -->
+      <div id="errorAlert" class="error-alert"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Usuario / Correo</label>
+          <input type="text" id="username" class="form-control" placeholder="Ingrese su usuario" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-submit">Ingresar a HistoGame 🚀</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    let currentRole = 'Estudiante';
+
+    // USUARIOS INICIALES RECONFIGURADOS
+    const defaultUsers = [
+      { name: 'Estudiante Uno', username: 'estudiante1', password: '12345', role: 'Estudiante' },
+      { name: 'J. Lema', username: 'Jlema', password: '12345', role: 'Estudiante' },
+      { name: 'Docente Uno', username: 'docente1', password: '12345', role: 'Docente' }
+    ];
+
+    // Carga e inicialización en localStorage
+    function initUsers() {
+      let storedUsers = JSON.parse(localStorage.getItem('histoGameUsers')) || [];
+      
+      // Actualizar o insertar los usuarios predeterminados
+      defaultUsers.forEach(defaultUser => {
+        const index = storedUsers.findIndex(u => u.username.toLowerCase() === defaultUser.username.toLowerCase());
+        if (index !== -1) {
+          storedUsers[index] = defaultUser; // Actualiza el rol si ya existía
+        } else {
+          storedUsers.push(defaultUser);
+        }
+      });
+
+      localStorage.setItem('histoGameUsers', JSON.stringify(storedUsers));
+    }
+
+    initUsers();
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById('tabEstudiante').classList.toggle('active', role === 'Estudiante');
+      document.getElementById('tabDocente').classList.toggle('active', role === 'Docente');
+      document.getElementById('errorAlert').style.display = 'none';
+    }
+
+    // AUTENTICACIÓN
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const userInput = document.getElementById('username').value.trim();
+      const passInput = document.getElementById('password').value.trim();
+      const alertBox = document.getElementById('errorAlert');
+
+      // 1. Acceso Administrador
+      if (userInput.toLowerCase() === 'admin' && passInput === 'admin123') {
+        sessionStorage.setItem('currentUser', JSON.stringify({ name: 'Administrador', role: 'Admin' }));
+        window.location.href = 'admin.html';
+        return;
+      }
+
+      // 2. Consulta de Usuarios
+      const storedUsers = JSON.parse(localStorage.getItem('histoGameUsers')) || [];
+
+      const userFound = storedUsers.find(u => 
+        u.username.toLowerCase() === userInput.toLowerCase() && 
+        u.password === passInput && 
+        u.role === currentRole
+      );
+
+      if (userFound) {
+        sessionStorage.setItem('currentUser', JSON.stringify(userFound));
+        
+        if (userFound.role === 'Docente') {
+          window.location.href = 'docente.html';
+        } else {
+          window.location.href = 'estudiante.html';
+        }
+      } else {
+        alertBox.textContent = `Credenciales incorrectas o el usuario no existe para el perfil de ${currentRole}.`;
+        alertBox.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

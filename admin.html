@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - HistoGame</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Estilos del Panel de Administración */
+    :root {
+      --primary: #4a2c11;
+      --primary-light: #7a4b2a;
+      --primary-dark: #2d1807;
+      --accent: #d4a373;
+      --accent-danger: #a93226;
+      --bg: #f4ebe1;
+      --card: #fffaf5;
+      --text: #2b2118;
+      --text-muted: #6e5d4f;
+      --border: #e0d0c1;
+      --shadow: 0 4px 20px rgba(45, 24, 7, 0.12);
+      --radius: 14px;
+      --student-color: #2e7d32;
+      --teacher-color: #1565c0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* NAVBAR */
+    nav {
+      background: var(--primary-dark);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 80px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 46px;
+      height: 46px;
+      background: rgba(255,255,255,.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+
+    .nav-title {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .nav-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,.7);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge-admin {
+      background: #c0392b;
+      color: #fff;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Botón Cerrar Sesión */
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: #c0392b;
+      border-color: #c0392b;
+      transform: translateY(-1px);
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .admin-container {
+      max-width: 1150px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 2rem;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 850px) {
+      .admin-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CARDS GENERALES */
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      box-shadow: var(--shadow);
+      height: fit-content;
+    }
+
+    .panel-header {
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.8rem;
+    }
+
+    .panel-header h2 {
+      font-family: 'Nunito', sans-serif;
+      color: var(--primary);
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* FORMULARIO DE CREACIÓN */
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: var(--primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-light);
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .role-option {
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .role-option input[type="radio"] {
+      display: none;
+    }
+
+    .role-option.selected-student {
+      border-color: var(--student-color);
+      background: #e8f5e9;
+      color: var(--student-color);
+    }
+
+    .role-option.selected-teacher {
+      border-color: var(--teacher-color);
+      background: #e3f2fd;
+      color: var(--teacher-color);
+    }
+
+    .btn-create {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-create:hover {
+      background: var(--primary-dark);
+    }
+
+    /* TABLA DE USUARIOS */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .user-table th {
+      background: var(--bg);
+      color: var(--primary-dark);
+      padding: 0.75rem 0.9rem;
+      border-bottom: 2px solid var(--border);
+      font-weight: 700;
+    }
+
+    .user-table td {
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-docente {
+      background: #e3f2fd;
+      color: var(--teacher-color);
+      border: 1px solid #90caf9;
+    }
+
+    .badge-estudiante {
+      background: #e8f5e9;
+      color: var(--student-color);
+      border: 1px solid #a5d6a7;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: var(--accent-danger);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .btn-delete:hover {
+      background: #fadbd8;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 0.9rem 1.4rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">🏛️</div>
+      <div class="nav-text">
+        <span class="nav-title">HistoGame</span>
+        <span class="nav-subtitle">Gestión de Accesos</span>
+      </div>
+    </a>
+    <div class="nav-right">
+      <span class="badge-admin">Administrador</span>
+      <button class="btn-logout" onclick="logout()">🚪 Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="admin-container">
+    
+    <!-- COLUMNA IZQUIERDA: CREAR USUARIO -->
+    <section class="panel-card">
+      <div class="panel-header">
+        <h2>👤 Crear Nuevo Usuario</h2>
+      </div>
+
+      <form id="createUserForm">
+        <label style="font-weight: 600; font-size: 0.85rem; color: var(--primary);">Tipo de Usuario</label>
+        <div class="role-selector" id="roleSelector">
+          <label class="role-option selected-student" id="lblStudent">
+            <input type="radio" name="userRole" value="Estudiante" checked onchange="updateRoleStyle()">
+            🎓 Estudiante
+          </label>
+          <label class="role-option" id="lblTeacher">
+            <input type="radio" name="userRole" value="Docente" onchange="updateRoleStyle()">
+            👨‍🏫 Docente
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Nombre Completo</label>
+          <input type="text" id="fullName" class="form-control" placeholder="Ej: Juan Pérez" required>
+        </div>
+
+        <div class="form-group">
+          <label for="username">Usuario / Correo Inst.</label>
+          <input type="text" id="username" class="form-control" placeholder="Ej: jperez" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña Asignada</label>
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group" id="extraFieldGroup">
+          <label for="extraDetail" id="extraFieldLabel">Año / Curso</label>
+          <input type="text" id="extraDetail" class="form-control" placeholder="Ej: 2do Bachillerato 'A'" required>
+        </div>
+
+        <button type="submit" class="btn-create">Guardar Usuario ➕</button>
+      </form>
+    </section>
+
+    <!-- COLUMNA DERECHA: LISTADO DE USUARIOS -->
+    <section class="panel-card">
+      <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h2>📋 Usuarios Registrados</h2>
+        <span id="userCount" style="font-size:0.85rem; color: var(--text-muted); font-weight:600;">Total: 0</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Detalle</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="toastNotification" class="toast">¡Usuario registrado con éxito!</div>
+
+  <script>
+    let usersList = JSON.parse(localStorage.getItem('histoGameUsers')) || [
+      { id: 1, name: "Carlos Mendoza", username: "cmendoza", role: "Docente", detail: "Ciencias Sociales" },
+      { id: 2, name: "Ana Belén Silva", username: "asilva", role: "Estudiante", detail: "2do Bachillerato 'A'" }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderUsersTable();
+
+      document.getElementById('createUserForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('fullName').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const role = document.querySelector('input[name="userRole"]:checked').value;
+        const detail = document.getElementById('extraDetail').value.trim();
+
+        usersList.push({ id: Date.now(), name, username, role, detail });
+        saveAndRender();
+
+        e.target.reset();
+        document.querySelector('input[name="userRole"][value="Estudiante"]').checked = true;
+        updateRoleStyle();
+
+        showToast(`¡${role} "${name}" registrado con éxito!`);
+      });
+    });
+
+    function updateRoleStyle() {
+      const isStudent = document.querySelector('input[name="userRole"]:checked').value === 'Estudiante';
+      document.getElementById('lblStudent').className = isStudent ? 'role-option selected-student' : 'role-option';
+      document.getElementById('lblTeacher').className = !isStudent ? 'role-option selected-teacher' : 'role-option';
+      
+      document.getElementById('extraFieldLabel').textContent = isStudent ? 'Año / Curso' : 'Asignatura / Área';
+      document.getElementById('extraDetail').placeholder = isStudent ? 'Ej: 2do Bachillerato "A"' : 'Ej: Ciencias Sociales / Historia';
+    }
+
+    function renderUsersTable() {
+      const tbody = document.getElementById('usersTableBody');
+      document.getElementById('userCount').textContent = `Total: ${usersList.length}`;
+      tbody.innerHTML = '';
+
+      if (usersList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding:1.5rem;">No hay usuarios registrados.</td></tr>`;
+        return;
+      }
+
+      usersList.forEach(user => {
+        const tr = document.createElement('tr');
+        const badgeClass = user.role === 'Docente' ? 'badge-docente' : 'badge-estudiante';
+        
+        tr.innerHTML = `
+          <td><strong>${user.name}</strong></td>
+          <td><code>${user.username}</code></td>
+          <td><span class="role-badge ${badgeClass}">${user.role}</span></td>
+          <td>${user.detail}</td>
+          <td>
+            <button class="btn-delete" onclick="deleteUser(${user.id})" title="Eliminar usuario">❌ Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function deleteUser(id) {
+      if (confirm('¿Estás seguro de que deseas eliminar este usuario?')) {
+        usersList = usersList.filter(u => u.id !== id);
+        saveAndRender();
+        showToast("Usuario eliminado.");
+      }
+    }
+
+    function saveAndRender() {
+      localStorage.setItem('histoGameUsers', JSON.stringify(usersList));
+      renderUsersTable();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // FUNCIÓN CERRAR SESIÓN
+    function logout() {
+      sessionStorage.removeItem('currentUser');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

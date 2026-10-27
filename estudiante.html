@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HistoGame - Aprende el Mundo Jugando</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estructura de barra lateral para el estudiante */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 80px);
+      background: var(--bg);
+    }
+    .sidebar-nav {
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+    .sidebar-btn {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 0.92rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .sidebar-btn:hover, .sidebar-btn.active {
+      background: var(--primary);
+      color: #fff;
+      transform: translateX(4px);
+    }
+    .content-area {
+      padding: 2.5rem;
+      overflow-y: auto;
+    }
+    .content-section {
+      display: none;
+    }
+    .content-section.active-section {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 900px) {
+      .app-layout { grid-template-columns: 1fr; }
+      .sidebar-nav { position: relative; height: auto; top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR SUPERIOR -->
+  <nav>
+    <a class="nav-brand" href="javascript:void(0)" onclick="switchSection('inicio')">
+      <div class="nav-logo">
+        <img src="./logo/logohist.png" alt="Logo HistoGame">
+      </div>
+      <div class="nav-text">
+        <span class="nav-title">HistoGame</span>
+        <span class="nav-subtitle">Aprende jugando</span>
+      </div>
+    </a>
+    <a href="index.html" class="btn-login" onclick="logout()">Cerrar Sesión</a>
+  </nav>
+
+  <!-- CONTENEDOR CON BARRA LATERAL -->
+  <div class="app-layout">
+    
+    <!-- BARRA LATERAL IZQUIERDA -->
+    <aside class="sidebar-nav">
+      <div style="padding: 0 0.5rem 1rem; font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--text-soft); letter-spacing: 1px;">Menú Principal</div>
+      <button class="sidebar-btn active" onclick="switchSection('inicio')" id="btn-inicio">🏠 Inicio</button>
+      <button class="sidebar-btn" onclick="switchSection('temas')" id="btn-temas">📚 Temas de Estudio</button>
+      <button class="sidebar-btn" onclick="switchSection('logros')" id="btn-logros">🏆 Logros y Medallas</button>
+      <button class="sidebar-btn" onclick="openHelpModal()">❓ Ayuda / Tour</button>
+      <button class="sidebar-btn" id="btn-open-feedback" style="color: #d97706; margin-top: auto;" onclick="document.getElementById('feedbackModal').style.display='flex'">💬 Comentarios</button>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO DINÁMICO -->
+    <main class="content-area">
+
+      <!-- SECCIÓN INICIO -->
+      <section id="sec-inicio" class="content-section active-section">
+        <div class="hero-badge">Plataforma Educativa</div>
+        <h1>¡Bienvenido a Historia!</h1>
+        <p>Aprende historia, geografía y sociedad de forma divertida e interactiva</p>
+
+        <div class="hero-pills">
+          <span class="pill">🎮 Juegos interactivos</span>
+          <span class="pill">🗺️ Contenido visual</span>
+          <span class="pill">📚 Aprende jugando</span>
+        </div>
+
+        <button class="btn-hero" onclick="switchSection('temas')">
+          Comenzar a aprender
+        </button>
+
+        <div class="float-icons" style="text-align: center; margin-top: 3rem;">🌎 🏛️ 🗺️ 🌿 ⚖️</div>
+
+        <div class="stats-bar" style="margin-top: 3rem;">
+          <div class="stat-item">
+            <div class="stat-num">7</div>
+            <div class="stat-label">Temas disponibles</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">7</div>
+            <div class="stat-label">Juegos interactivos</div>
+          </div>
+          <div class="stat-item" style="border-left: 2px solid #f0f0f0;">
+            <div class="stat-num" id="completed-games-num">0 / 7</div>
+            <div class="stat-label">🏆 Juegos completados</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN TEMAS DE ESTUDIO -->
+      <section id="sec-temas" class="content-section">
+        <div class="section-header" style="padding-top: 0;">
+          <h2>Temas de Estudio</h2>
+          <p>Selecciona un tema para comenzar a aprender, debatir y valorar</p>
+          <div class="divider"></div>
+        </div>
+
+        <div id="temas-container" style="max-width: 900px; margin: 2rem auto 0;">
+          <!-- TEMA 1 -->
+          <div class="topic-card" id="topic-1">
+            <div class="topic-header" onclick="toggleTopic('topic-1')">
+              <div class="topic-num">1</div>
+              <div class="topic-info">
+                <h3>El Cristianismo</h3>
+                <p>El mundo donde nacio Jesus</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Descubre el viaje y mensajes que Jesus impartio durante su vida siendo sedimentos del cristianismo</p>
+              
+              <div class="rating-container" data-topic-id="1">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(1, 1)">★</span>
+                  <span class="star" onclick="rateTopic(1, 2)">★</span>
+                  <span class="star" onclick="rateTopic(1, 3)">★</span>
+                  <span class="star" onclick="rateTopic(1, 4)">★</span>
+                  <span class="star" onclick="rateTopic(1, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-1">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 1 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(1)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-1"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-1" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-1" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(1)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 2 -->
+          <div class="topic-card" id="topic-2">
+            <div class="topic-header" onclick="toggleTopic('topic-2')">
+              <div class="topic-num">2</div>
+              <div class="topic-info">
+                <h3>Origen del Imperio Carolingio</h3>
+                <p>Del Reino Franco a la corona imperial de Carlomagno.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Se estudiará cómo la dinastía carolingia unificó Europa occidental tras la caída de Roma. Analizaremos la crucial alianza con la Iglesia y la coronación de Carlomagno en el año 800.</p>
+              
+              <div class="rating-container" data-topic-id="2">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(2, 1)">★</span>
+                  <span class="star" onclick="rateTopic(2, 2)">★</span>
+                  <span class="star" onclick="rateTopic(2, 3)">★</span>
+                  <span class="star" onclick="rateTopic(2, 4)">★</span>
+                  <span class="star" onclick="rateTopic(2, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-2">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 2 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(2)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-2"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-2" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-2" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(2)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 3 -->
+          <div class="topic-card" id="topic-3">
+            <div class="topic-header" onclick="toggleTopic('topic-3')">
+              <div class="topic-num">3</div>
+              <div class="topic-info">
+                <h3>El Renacimiento Carolingio</h3>
+                <p>El despertar educativo y cultural de la Temprana Edad Media.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Exploraremos el impulso que Carlomagno dio a la alfabetización, la creación de escuelas y la preservación de textos antiguos.</p>
+              
+              <div class="rating-container" data-topic-id="3">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(3, 1)">★</span>
+                  <span class="star" onclick="rateTopic(3, 2)">★</span>
+                  <span class="star" onclick="rateTopic(3, 3)">★</span>
+                  <span class="star" onclick="rateTopic(3, 4)">★</span>
+                  <span class="star" onclick="rateTopic(3, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-3">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 3 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(3)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-3"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-3" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-3" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(3)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 4 -->
+          <div class="topic-card" id="topic-4">
+            <div class="topic-header" onclick="toggleTopic('topic-4')">
+              <div class="topic-num">4</div>
+              <div class="topic-info">
+                <h3>Las Cruzadas y su Impacto</h3>
+                <p>Guerra santa, comercio y el choque de dos mundos.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Analizaremos las expediciones militares cristianas hacia Tierra Santa y sus motivaciones religiosas y políticas.</p>
+              
+              <div class="rating-container" data-topic-id="4">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(4, 1)">★</span>
+                  <span class="star" onclick="rateTopic(4, 2)">★</span>
+                  <span class="star" onclick="rateTopic(4, 3)">★</span>
+                  <span class="star" onclick="rateTopic(4, 4)">★</span>
+                  <span class="star" onclick="rateTopic(4, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-4">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 4 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(4)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-4"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-4" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-4" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(4)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 5 -->
+          <div class="topic-card" id="topic-5">
+            <div class="topic-header" onclick="toggleTopic('topic-5')">
+              <div class="topic-num">5</div>
+              <div class="topic-info">
+                <h3>La Inquisición</h3>
+                <p>Herejía, control social y los tribunales de la fe.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Se enseñará el origen y funcionamiento de los tribunales eclesiásticos creados para combatir las doctrinas contrarias.</p>
+              
+              <div class="rating-container" data-topic-id="5">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(5, 1)">★</span>
+                  <span class="star" onclick="rateTopic(5, 2)">★</span>
+                  <span class="star" onclick="rateTopic(5, 3)">★</span>
+                  <span class="star" onclick="rateTopic(5, 4)">★</span>
+                  <span class="star" onclick="rateTopic(5, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-5">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 5 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(5)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-5"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-5" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-5" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(5)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 6 -->
+          <div class="topic-card" id="topic-6">
+            <div class="topic-header" onclick="toggleTopic('topic-6')">
+              <div class="topic-num">6</div>
+              <div class="topic-info">
+                <h3>El Origen de las Universidades Medievales</h3>
+                <p>Los gremios del saber y el nacimiento de la educación superior.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Descubriremos cómo surgieron los primeros centros de alta educación organizados por maestros y estudiantes.</p>
+              
+              <div class="rating-container" data-topic-id="6">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(6, 1)">★</span>
+                  <span class="star" onclick="rateTopic(6, 2)">★</span>
+                  <span class="star" onclick="rateTopic(6, 3)">★</span>
+                  <span class="star" onclick="rateTopic(6, 4)">★</span>
+                  <span class="star" onclick="rateTopic(6, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-6">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 6 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(6)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-6"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-6" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-6" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(6)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMA 7 -->
+          <div class="topic-card" id="topic-7">
+            <div class="topic-header" onclick="toggleTopic('topic-7')">
+              <div class="topic-num">7</div>
+              <div class="topic-info">
+                <h3>Expansion Cultural, Artistica, Arquitectonica y Cientifica</h3>
+                <p>El esplendor del Románico, el Gótico y los nuevos saberes.</p>
+              </div>
+              <span class="topic-arrow">▼</span>
+            </div>
+            <div class="topic-body">
+              <p class="topic-description">Analizaremos la transición del estilo Románico al Gótico a través de las grandes catedrales llenas de luz.</p>
+              
+              <div class="rating-container" data-topic-id="7">
+                <span class="rating-label">Valora este tema:</span>
+                <div class="stars">
+                  <span class="star" onclick="rateTopic(7, 1)">★</span>
+                  <span class="star" onclick="rateTopic(7, 2)">★</span>
+                  <span class="star" onclick="rateTopic(7, 3)">★</span>
+                  <span class="star" onclick="rateTopic(7, 4)">★</span>
+                  <span class="star" onclick="rateTopic(7, 5)">★</span>
+                </div>
+                <span class="rating-score" id="rating-score-7">(0.0)</span>
+              </div>
+
+              <div class="topic-actions">
+                <button class="btn-content" onclick="openPdfModal('presentaciones/tema 7 unidad 2.pdf')">📖 Contenido</button>
+                <button class="btn-game" onclick="openLocalGame(7)">🎮 Juega y aprende</button>
+              </div>
+
+              <div class="debate-section">
+                <h4>💬 Debate del Tema</h4>
+                <div class="debate-comments" id="comments-7"></div>
+                <div class="debate-form">
+                  <input type="text" id="debate-author-7" placeholder="Tu nombre" class="debate-input-name">
+                  <textarea id="debate-text-7" placeholder="Escribe tu opinión o duda para el debate..." rows="2" class="debate-textarea"></textarea>
+                  <button class="btn-debate-send" onclick="addDebateComment(7)">Publicar Comentario</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN LOGROS Y MEDALLAS -->
+      <section id="sec-logros" class="content-section">
+        <div class="section-header" style="padding-top: 0;">
+          <h2>🏆 Medallas y Logros</h2>
+          <p>Desbloquea insignias a medida que aprendes y juegas</p>
+          <div class="divider"></div>
+        </div>
+
+        <section class="badges-section" style="max-width: 900px; margin: 2rem auto 0;">
+          <div class="badges-grid" id="badges-container">
+            <!-- Medallas dinámicas cargadas por JavaScript -->
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: JUEGO INTEGRADO -->
+  <div class="modal-overlay" id="gameModal" onclick="closeGameModal(event)">
+    <div class="modal-box play-modal-box" onclick="event.stopPropagation()">
+      <div class="play-modal-header">
+        <h3 id="modalTopicName">🎮 Zona de Juego - HistoGame</h3>
+        <button class="btn-close-play-top" onclick="closeModal()">&times;</button>
+      </div>
+
+      <div class="progress-container" style="background: #e0e0e0; border-radius: 8px; height: 10px; width: 100%; margin: 15px 0 5px 0; overflow: hidden;">
+        <div id="progress-bar" style="background: #2ECC71; height: 100%; width: 0%; transition: width 0.3s;"></div>
+      </div>
+      <p id="progress-text" style="font-size: 0.9rem; color: #7f8c8d; font-weight: bold; margin-bottom: 15px;">Actividad 1 de 10</p>
+
+      <div class="play-container" id="modal-questions-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: PDF -->
+  <div class="modal-overlay" id="pdfModal" onclick="closePdfModal(event)">
+    <div class="modal-box pdf-modal-box" onclick="event.stopPropagation()">
+      <div class="pdf-modal-header">
+        <h3 id="pdfModalTitle">Visualizador de Contenido</h3>
+        <button class="btn-close-pdf-top" onclick="closePdfModal(null)">&times;</button>
+      </div>
+      <div class="pdf-container">
+        <iframe id="pdfViewer" src="" frameborder="0" style="width:100%; height:100%;"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AYUDA INTERACTIVA -->
+  <div class="modal-overlay" id="helpModal" onclick="closeHelpModal(event)">
+    <div class="modal-box help-modal-box tour-modal-box" onclick="event.stopPropagation()">
+      <div class="tour-header">
+        <h3 id="tour-title">Bienvenido a HistoGame</h3>
+        <span id="tour-progress" class="tour-progress-badge">Página 1 de 5</span>
+      </div>
+      <div class="tour-body-wrapper">
+        <div id="tour-content-view" class="tour-content-animate">
+          <div class="tour-image-container">
+            <img id="tour-img" src="./logo/logohist.png" alt="Ilustración de guía">
+          </div>
+          <div class="tour-text-container">
+            <p id="tour-text">Cargando guía...</p>
+          </div>
+        </div>
+      </div>
+      <div class="tour-footer">
+        <button id="btn-tour-prev" class="btn-tour btn-tour-secondary" onclick="navigateTour(-1)">Atrás</button>
+        <div class="tour-action-group">
+          <button id="btn-tour-skip" class="btn-tour btn-tour-cancel" onclick="closeHelpModal(null)">Omitir</button>
+          <button id="btn-tour-next" class="btn-tour btn-tour-primary" onclick="navigateTour(1)">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BUZÓN DE COMENTARIOS -->
+  <div class="modal-overlay" id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div class="modal-box feedback-modal-box" style="max-width: 500px; width: 90%; border-radius: 16px; padding: 25px; background: #fff; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 20px;">
+        <h3 style="font-family: 'Poppins', sans-serif; color: #2C3E50; margin: 0; display: flex; align-items: center; gap: 8px;">💬 Deja tu Retroalimentación</h3>
+        <button onclick="document.getElementById('feedbackModal').style.display='none'" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #aaa;">&times;</button>
+      </div>
+      <form id="feedbackForm" style="font-family: 'Nunito', sans-serif;">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #555;">Tu Nombre (Opcional):</label>
+          <input type="text" id="studentName" placeholder="Ej. Juan Pérez" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px;">
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #555;">Selecciona la Clase / Tema:</label>
+          <select id="feedbackTopic" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background-color: #fff;">
+            <option value="" disabled selected>-- Elige una opción --</option>
+            <option value="General">Comentario General de la Plataforma</option>
+            <option value="Tema 1">Tema 1: El Cristianismo</option>
+            <option value="Tema 2">Tema 2: Origen del Imperio Carolingio</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 600; color: #555;">Tu Comentario o Sugerencia:</label>
+          <textarea id="feedbackText" rows="4" required placeholder="Cuéntanos qué te pareció..." style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; resize: none;"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f0f0f0; padding-top: 15px;">
+          <button type="button" onclick="document.getElementById('feedbackModal').style.display='none'" style="background: #e0e0e0; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button>
+          <button type="submit" style="background: #2ECC71; color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: bold; cursor: pointer;">Enviar Comentario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT PARA CONTROLAR EL CAMBIO DE SECCIONES CON LA BARRA LATERAL -->
+  <script>
+    function switchSection(sectionId) {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.content-section').forEach(sec => {
+        sec.classList.remove('active-section');
+      });
+      // Mostrar la sección seleccionada
+      const target = document.getElementById('sec-' + sectionId);
+      if (target) {
+        target.classList.add('active-section');
+      }
+      // Actualizar estado activo en los botones de la barra lateral
+      document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById('btn-' + sectionId);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
